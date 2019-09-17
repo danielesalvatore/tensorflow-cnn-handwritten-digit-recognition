@@ -34,8 +34,6 @@ const MNIST_LABELS_PATH =
 /**
  * A class that fetches the sprited MNIST dataset and returns shuffled batches.
  *
- * NOTE: This will get much easier. For now, we do data fetching and
- * manipulation manually.
  */
 export class MnistData {
   constructor() {
