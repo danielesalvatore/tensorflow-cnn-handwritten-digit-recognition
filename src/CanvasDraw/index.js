@@ -11,19 +11,25 @@ export default class MyCanvasDraw extends Component {
   onUndoBtnClick() {
     this.saveableCanvas.undo()
   }
-  onGuessBtnClick() {
+  async onGuessBtnClick() {
     const {model, predict} = this.props
 
     if (model && predict) {
-      predict(model, this.saveableCanvas.canvasContainer.children[1])
+      const canvas = this.saveableCanvas.canvasContainer.children[1]
+      const r = await predict(model, canvas)
+      if (r.img) {
+        this.setState({
+          img: r.img,
+        })
+      }
     }
-    // const img = this.saveableCanvas.canvasContainer.children[1].toDataURL()
-    // this.setState({
-    //   img,
-    // })
   }
 
   componentDidMount() {
+    const canvas = this.saveableCanvas.canvasContainer.children[1]
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'blue'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     this.interval = setInterval(this.onGuessBtnClick.bind(this), 5000)
   }
 
@@ -34,6 +40,7 @@ export default class MyCanvasDraw extends Component {
 
   render() {
     const {img} = this.state
+
     return (
       <>
         <ButtonToolbar>
@@ -48,13 +55,17 @@ export default class MyCanvasDraw extends Component {
           canvasWidth="400px"
           canvasHeight="400px"
           ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
+          //hideGrid={true}
+          brushColor="#FFFFFF"
+          backgroundColor="#000"
+          catenaryColor="#e0e0e0"
           style={{
             boxShadow:
               '0 13px 27px -5px rgba(50, 50, 93, 0.25),    0 8px 16px -8px rgba(0, 0, 0, 0.3)',
           }}
         />
 
-        {img && <img src={img} alt="number to guess" />}
+        {img && <img src={img.toDataURL()} alt="number to guess" />}
       </>
     )
   }
